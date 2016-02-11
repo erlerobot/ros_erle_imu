@@ -11,7 +11,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/Temperature.h>
-
+#include <sensor_msgs/MagneticField.h>
 // Objects
 
 MPU9250 imu;    // MPU9250
@@ -74,10 +74,10 @@ int main(int argc, char *argv[])
 
     ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>("imu9250", 1000);
     ros::Publisher temperature_pub = n.advertise<sensor_msgs::Temperature>("temperature9250", 1000);
+    ros::Publisher magnetic_field_pub = n.advertise<sensor_msgs::MagneticField>("magneticField9250", 1000);
 
     ros::Rate loop_rate(50);
 
-    int count = 0;
     while (ros::ok()){
 
         //----------------------- Calculate delta time ----------------------------
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 
         //-------- Read raw measurements from the MPU and update AHRS --------------
         // Accel + gyro.
-        imu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+        imu.getMotion9(&ax, &ay, &az, &gx, &gy, &gz, &mx, &my, &mz);
         ahrs.updateIMU(ax, ay, az, gx*0.0175, gy*0.0175, gz*0.0175, dt);
 
         //------------------------ Read Euler angles ------------------------------
@@ -156,14 +156,18 @@ int main(int argc, char *argv[])
         imu_pub.publish(msg);
 
         sensor_msgs::Temperature temperature_msg;
-	imu.read_temp();
         temperature_msg.temperature = imu.temperature;
         temperature_msg.variance = 0;
         temperature_pub.publish(temperature_msg);
-        ros::spinOnce();
 
+        sensor_msgs::MagneticField magnetic_field_msg;
+        magnetic_field_msg.magnetic_field.x = mx;
+        magnetic_field_msg.magnetic_field.y = my;
+        magnetic_field_msg.magnetic_field.z = mz;
+        magnetic_field_pub.publish(magnetic_field_msg);
+
+        ros::spinOnce();
         loop_rate.sleep();
-        ++count;
     }
 
     return 0;
