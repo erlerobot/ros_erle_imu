@@ -87,8 +87,6 @@ rospy.init_node("display_3D_visualization_node")
 def processIMU_message(imuMsg):
     global yaw_offset
 
-    print "process"
-
     roll=0
     pitch=0
     yaw=0
