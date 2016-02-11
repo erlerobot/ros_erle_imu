@@ -60,14 +60,6 @@ void imuSetup()
 	ahrs.setGyroOffset(offset[0], offset[1], offset[2]);
 }
 
-//============================== Main loop ====================================
-
-void imuLoop()
-{
-
-
-}
-
 //=============================================================================
 
 int main(int argc, char *argv[])
