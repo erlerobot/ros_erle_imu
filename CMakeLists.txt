@@ -18,6 +18,10 @@ catkin_package(CATKIN_DEPENDS std_msgs)
 ## Build talker and listener
 include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
 
+add_executable(imu_talker src/imu_talker.cpp src/MPU9250.cpp)
+target_link_libraries(imu_talker ${catkin_LIBRARIES} ${Boost_LIBRARIES})
+add_dependencies(imu_talker sensor_smgs_generate_messages_cpp)
+
 add_executable(imu_listener src/imu_listener.cpp)
 target_link_libraries(imu_listener ${catkin_LIBRARIES} ${Boost_LIBRARIES})
 add_dependencies(imu_listener sensor_smgs_generate_messages_cpp)
