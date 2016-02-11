@@ -156,10 +156,10 @@ int main(int argc, char *argv[])
         imu_pub.publish(msg);
 
         sensor_msgs::Temperature temperature_msg;
+	imu.read_temp();
         temperature_msg.temperature = imu.temperature;
         temperature_msg.variance = 0;
         temperature_pub.publish(temperature_msg);
-
         ros::spinOnce();
 
         loop_rate.sleep();
