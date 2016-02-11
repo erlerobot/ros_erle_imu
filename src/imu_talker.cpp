@@ -10,6 +10,7 @@
 
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
+#include <sensor_msgs/Temperature.h>
 
 // Objects
 
@@ -72,6 +73,7 @@ int main(int argc, char *argv[])
     ros::NodeHandle n;
 
     ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>("imu9250", 1000);
+    ros::Publisher temperature_pub = n.advertise<sensor_msgs::Temperature>("temperature9250", 1000);
 
     ros::Rate loop_rate(50);
 
@@ -152,6 +154,11 @@ int main(int argc, char *argv[])
         msg.orientation_covariance[8] = 0.0025;
 
         imu_pub.publish(msg);
+
+        sensor_msgs::Temperature temperature_msg;
+        temperature_msg.temperature;
+        temperature_msg.variance = 0;
+        temperature_pub.publish(temperature_msg);
 
         ros::spinOnce();
 
