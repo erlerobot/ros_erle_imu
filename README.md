@@ -14,9 +14,11 @@ Quick setup:
 # Within a catkin directory
 cd src
 git clone https://github.com/erlerobot/ros_erle_imu      
-cd ..; catkin_make
+cd ..
+catkin_make_isolated --pkg ros_erle_imu
+sudo -s # you'll need privileges since we're accessing spi
 source devel/setup.bash
-rosrun ros_erle_imu imu.py
+rosrun ros_erle_imu imu_talker
 ```
 If you have problems to execute the talker (imu.py), try executing it as root.
 
@@ -32,6 +34,14 @@ rosrun ros_erle_imu imu_listener
 ```
 
 Erle-Brain 2 Supported
+
+Testing
+-----
+```bash
+rosrun ros_erle_imu visualization.py
+```
+
+![](https://erlerobotics.com/docs/img/Artificial_Brains/Erle_Brain2/software/IMU_brain2.png)
 
 Links
 -----
