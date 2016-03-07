@@ -32,3 +32,7 @@ catkin_install_python(PROGRAMS
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}/scripts
 )
 
+install(TARGETS imu_talker imu_listener 
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+
