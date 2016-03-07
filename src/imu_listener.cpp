@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 
   ros::NodeHandle n;
 
-  ros::Subscriber sub = n.subscribe("imu", 1000, chatterIMU);
+  ros::Subscriber sub = n.subscribe("imu9250", 1000, chatterIMU);
 
   ros::spin();
 
