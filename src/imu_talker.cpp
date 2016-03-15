@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
         // Accel + gyro.
         imu.getMotion9(&ax, &ay, &az, &gx, &gy, &gz, &mx, &my, &mz);
         //ahrs.updateIMU(ax, ay, az, gx*0.0175, gy*0.0175, gz*0.0175, dt);
-	ahrs.update(ax, ay, az, gx*0.0175, gy*0.0175, gz*0.0175, mx, my, mz, dt);
+        ahrs.update(ax, ay, az, gx*0.0175, gy*0.0175, gz*0.0175, mx, my, mz, dt);
 
         //------------------------ Read Euler angles ------------------------------
 
