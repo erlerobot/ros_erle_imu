@@ -1,12 +1,3 @@
-/*
-Mahony AHRS algorithm implemented by Madgwick
-See: http://www.x-io.co.uk/node/8#open_source_ahrs_and_imu_algorithms
-
-Adapted by Igor Vereninov (igor.vereninov@emlid.com)
-Provided to you by Emlid Ltd (c) 2014.
-twitter.com/emlidtech || www.emlid.com || info@emlid.com
-*/
-
 #ifndef AHRS_HPP
 #define AHRS_HPP
 
@@ -133,10 +124,11 @@ public:
 		float halfex, halfey, halfez;
 		float qa, qb, qc;
 
-		gx -= gyroOffset[0];
-		gy -= gyroOffset[1];
-		gz -= gyroOffset[2];
-
+		if (gx!=0.0 && gy!=0.0 && gz!=0.0){
+			gx -= gyroOffset[0];
+			gy -= gyroOffset[1];
+			gz -= gyroOffset[2];
+		}
 		// Compute feedback only if accelerometer measurement valid (avoids NaN in accelerometer normalisation)
 		if(!((ax == 0.0f) && (ay == 0.0f) && (az == 0.0f))) {
 

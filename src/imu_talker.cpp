@@ -11,7 +11,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
 #include <sensor_msgs/Temperature.h>
-#include <sensor_msgs/MagneticField.h>
+
 // Objects
 
 MPU9250 imu;    // MPU9250
@@ -44,21 +44,21 @@ void imuSetup()
 
     //-------------------------------------------------------------------------
 
-	printf("Beginning Gyro calibration...\n");
-	for(int i = 0; i<100; i++)
-	{
-		imu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
-		offset[0] += (-gx*0.0175);
-		offset[1] += (-gy*0.0175);
-		offset[2] += (-gz*0.0175);
-		usleep(10000);
-	}
-	offset[0]/=100.0;
-	offset[1]/=100.0;
-	offset[2]/=100.0;
+    printf("Beginning Gyro calibration...\n");
+    for(int i = 0; i<100; i++)
+    {
+        imu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+        offset[0] += (-gx*0.0175);
+        offset[1] += (-gy*0.0175);
+        offset[2] += (-gz*0.0175);
+        usleep(10000);
+    }
+    offset[0]/=100.0;
+    offset[1]/=100.0;
+    offset[2]/=100.0;
 
-	printf("Offsets are: %f %f %f\n", offset[0], offset[1], offset[2]);
-	ahrs.setGyroOffset(offset[0], offset[1], offset[2]);
+    printf("Offsets are: %f %f %f\n", offset[0], offset[1], offset[2]);
+    ahrs.setGyroOffset(offset[0], offset[1], offset[2]);
 }
 
 //=============================================================================
@@ -69,15 +69,15 @@ int main(int argc, char *argv[])
     imuSetup();
 
     ros::init(argc, argv, "imu_talker");
-    
+
     ros::NodeHandle n;
 
     ros::Publisher imu_pub = n.advertise<sensor_msgs::Imu>("imu9250", 1000);
     ros::Publisher temperature_pub = n.advertise<sensor_msgs::Temperature>("temperature9250", 1000);
-    ros::Publisher magnetic_field_pub = n.advertise<sensor_msgs::MagneticField>("magneticField9250", 1000);
 
     ros::Rate loop_rate(50);
 
+    int count = 0;
     while (ros::ok()){
 
         //----------------------- Calculate delta time ----------------------------
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
         previoustime = currenttime;
         currenttime = 1000000 * tv.tv_sec + tv.tv_usec;
         dt = (currenttime - previoustime) / 1000000.0;
-        if(dt < 1/1300.0) 
+        if(dt < 1/1300.0)
             usleep((1/1300.0-dt)*1000000);
         gettimeofday(&tv,NULL);
         currenttime = 1000000 * tv.tv_sec + tv.tv_usec;
@@ -94,8 +94,17 @@ int main(int argc, char *argv[])
 
         //-------- Read raw measurements from the MPU and update AHRS --------------
         // Accel + gyro.
-        imu.getMotion9(&ax, &ay, &az, &gx, &gy, &gz, &mx, &my, &mz);
-        ahrs.updateIMU(ax, ay, az, gx*0.0175, gy*0.0175, gz*0.0175, dt);
+        imu.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+
+        if(fabs(ax)<0.05) ax = 0.0;
+        if(fabs(ay)<0.05) ay = 0.0;
+//        if(fabs(az)<1.2) az = 0.0;
+
+        if(fabs(gx)<2.0) gx = 0.0;
+        if(fabs(gy)<2.0) gy = 0.0;
+        if(fabs(gz)<2.0) gz = 0.0;
+
+        ahrs.updateIMU(ax, ay, az, gx*0.02, gy*0.02, gz*0.02, dt);
 
         //------------------------ Read Euler angles ------------------------------
 
@@ -156,18 +165,14 @@ int main(int argc, char *argv[])
         imu_pub.publish(msg);
 
         sensor_msgs::Temperature temperature_msg;
+    imu.read_temp();
         temperature_msg.temperature = imu.temperature;
         temperature_msg.variance = 0;
         temperature_pub.publish(temperature_msg);
-
-        sensor_msgs::MagneticField magnetic_field_msg;
-        magnetic_field_msg.magnetic_field.x = mx;
-        magnetic_field_msg.magnetic_field.y = my;
-        magnetic_field_msg.magnetic_field.z = mz;
-        magnetic_field_pub.publish(magnetic_field_msg);
-
         ros::spinOnce();
+
         loop_rate.sleep();
+        ++count;
     }
 
     return 0;
