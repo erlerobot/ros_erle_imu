@@ -41,7 +41,7 @@ Testing
 rosrun ros_erle_imu visualization.py
 ```
 
-![](https://erlerobotics.com/docs/img/Artificial_Brains/Erle_Brain2/software/IMU_brain2.png)
+![](http://docs.erlerobotics.com/erle_robots/erle_copter/examples/visualizing_imu/IMU_brain2.png)
 
 Links
 -----
